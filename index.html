@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards & Drag-and-Drop Test</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Vocab Learner</h1>
+        
+        <!-- Section 1: Input -->
+        <div id="input-section" class="section active">
+            <p>Paste your vocabulary list below. Ensure each term and its definition are separated by a new line, and each term-definition pair is separated by an empty line.</p>
+            <textarea id="vocab-input" rows="15" placeholder="Term&#10;Definition&#10;&#10;Term 2&#10;Definition 2..."></textarea>
+            <button id="btn-parse" class="primary-btn">Load Vocabulary</button>
+        </div>
+
+        <!-- Section 2: Mode Selection -->
+        <div id="mode-selection" class="section hidden">
+            <h2>Vocabulary Loaded! (<span id="vocab-count">0</span> words)</h2>
+            <div class="modes">
+                <button id="btn-flashcards" class="secondary-btn">Flashcards</button>
+                <div class="test-config">
+                    <label for="test-count">Words for Test:</label>
+                    <input type="number" id="test-count" value="10" min="1">
+                    <button id="btn-test" class="secondary-btn">Drag & Drop Test</button>
+                </div>
+            </div>
+            
+            <div class="ai-config" style="margin-top: 1rem; margin-bottom: 1.5rem; text-align: center; background: #2c3e50; padding: 1rem; border-radius: 4px; border: 1px solid #34495e;">
+                <input type="checkbox" id="alter-defs-checkbox">
+                <label for="alter-defs-checkbox" style="font-weight: bold; color: #fff;">Alter Definitions</label>
+                <p style="font-size: 0.85rem; color: #bdc3c7; margin-top: 5px;">(Uses WebLLM to run AI completely in your browser without an API key!)</p>
+                <p id="ai-status" style="font-size: 0.9rem; font-weight: bold; color: #3498db; margin-top: 5px;"></p>
+            </div>
+
+            <button id="btn-back-input" class="tertiary-btn">Back to Input</button>
+        </div>
+
+        <!-- Section 3: Flashcards -->
+        <div id="flashcards-section" class="section hidden">
+            <div class="flashcard-container">
+                <div id="flashcard" class="flashcard">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <p id="fc-term">Term</p>
+                        </div>
+                        <div class="flashcard-back">
+                            <p id="fc-def">Definition</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="btn-prev">Previous</button>
+                <span id="fc-counter">1 / 10</span>
+                <button id="btn-next">Next</button>
+            </div>
+            <button class="tertiary-btn btn-back-menu">Back to Menu</button>
+        </div>
+
+        <!-- Section 4: Drag & Drop Test -->
+        <div id="test-section" class="section hidden">
+            <h2>Drag & Drop Test</h2>
+            <p>Drag the definitions on the right to the matching terms on the left.</p>
+            <div class="test-container">
+                <div class="column-wrapper">
+                    <input type="text" id="search-terms" class="search-bar" placeholder="Search terms...">
+                    <div class="terms-column" id="terms-column">
+                        <!-- Terms go here -->
+                    </div>
+                </div>
+                <div class="column-wrapper">
+                    <input type="text" id="search-defs" class="search-bar" placeholder="Search definitions...">
+                    <div class="defs-column" id="defs-column">
+                        <!-- Draggable defs go here -->
+                    </div>
+                </div>
+            </div>
+            <div class="test-controls">
+                <button id="btn-submit-test" class="primary-btn">Submit Test</button>
+                <button id="btn-reset-test" class="secondary-btn">Reset</button>
+                <button class="tertiary-btn btn-back-menu">Back to Menu</button>
+            </div>
+            <div id="test-results" class="hidden"></div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
