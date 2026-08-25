@@ -138,7 +138,7 @@ async function alterDefinitionsWithWebLLM(pairs) {
         btnTest.disabled = true;
         try {
             const { CreateMLCEngine } = await import("https://esm.run/@mlc-ai/web-llm");
-            webllmEngine = await CreateMLCEngine("Phi-3-mini-4k-instruct-q4f16_1-MLC", {
+            webllmEngine = await CreateMLCEngine("Qwen2.5-0.5B-Instruct-q4f16_1-MLC", {
                 initProgressCallback: (progress) => {
                     aiStatus.textContent = progress.text;
                 }
@@ -159,11 +159,24 @@ async function alterDefinitionsWithWebLLM(pairs) {
         let item = pairs[i];
         try {
             const messages = [
-                { role: "system", content: "You are an educational assistant. Rewrite the following definition in a slightly different way to test comprehension rather than rote memorization. Keep it accurate but change the wording. ONLY output the rewritten definition, no conversational text." },
-                { role: "user", content: `Term: ${item.term}\nOriginal Definition: ${item.def}\n\nRewritten Definition:` }
+                { 
+                    role: "system", 
+                    content: "You are an expert educational examiner creating test questions. Your task is to paraphrase the provided definition for a term so students test conceptual understanding rather than rote memorization.\n\nStrict Rules:\n1. Maintain 100% factual and contextual accuracy.\n2. Rephrase sentence structure and substitute key synonyms.\n3. DO NOT include the term itself or any variation of the term in the rewritten definition.\n4. DO NOT add conversational filler (e.g., 'Here is...', 'Sure!', quotes, or prefixes).\n5. Return ONLY the rewritten definition text." 
+                },
+                { 
+                    role: "user", 
+                    content: `Term: ${item.term}\nOriginal Definition: ${item.def}\n\nRewritten Definition:` 
+                }
             ];
-            const reply = await webllmEngine.chat.completions.create({ messages });
-            altered.push({ term: item.term, def: reply.choices[0].message.content.trim() || item.def });
+            const reply = await webllmEngine.chat.completions.create({
+                messages,
+                temperature: 0.4,
+                max_tokens: 150
+            });
+            let resultText = reply.choices[0].message.content.trim();
+            // Clean up any stray quotes or prefixes if present
+            resultText = resultText.replace(/^(Rewritten Definition:|"|')/i, '').replace(/("|\')$/, '').trim();
+            altered.push({ term: item.term, def: resultText || item.def });
         } catch (err) {
             console.error("WebLLM generation error:", err);
             altered.push(item);
